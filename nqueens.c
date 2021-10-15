@@ -12,17 +12,17 @@ typedef struct {
     int *max_row, n, pid, p;
 } GM;
 
-int can_place(int **board, int col_val, int row_val, int n) {
+int can_place(int **board, int row_val, int col_val, int n) {
     int i,j;
     for(i = 0; i<n;i++){
-        if(board[i][row_val]) return 0;
+        if(board[row_val][i]) return 0;
     }
 
-    for (i = col_val, j = row_val; i >= 0 && j >= 0; i--, j--)
+    for (i = row_val, j = col_val; i >= 0 && j >= 0; i--, j--)
         if (board[i][j])
             return 0;
     
-    for (i = col_val, j = row_val; j >= 0 && i < n; i++, j--)
+    for (i = row_val, j = col_val; j >= 0 && i < n; i++, j--)
         if (board[i][j])
             return 0;
 
@@ -56,10 +56,10 @@ void nqueens(int **board, int *row, int *max_row, int col_num, int n) {
     }
     for(i = 0; i< n; i++){
         if(can_place(board,i,col_num,n)) {
-            board[col_num][i] = 1;
+            board[i][col_num] = 1;
             row[col_num] = i;
             nqueens(board,row,max_row,col_num+1,n);
-            board[col_num][i] = 0;
+            board[i][col_num] = 0;
         }
     }
     return;
@@ -87,10 +87,11 @@ void * nqueens_call(void *varg) {
         }
 
         for(i = pid; i<n; i+=p){
-            board[0][i] = 1;
+            board[i][0] = 1;
             row[0] = i;
-            printf("pid: %d\n",pid);
+            
             nqueens(board,row,max_row,1,n);
+            board[i][0] = 0;
         }
     }
 }
